@@ -1,0 +1,2 @@
+# NewsShorts
+Shorts for news
