@@ -13,7 +13,7 @@ hiltVersion = "2.51.1"
 hiltNavCompose = "1.2.0"
 ksp = "2.0.0-1.0.23"
 lifecycleViewModelCompose = "2.8.4"
-retrofitVersion = "2.9.0"
+retrofitVersion = "2.11.0"
 okhttpVersion = "4.12.0"
 coil = "2.6.0"
 
