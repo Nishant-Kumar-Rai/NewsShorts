@@ -1,4 +1,4 @@
-package com.example.newsshorts.ui.theme
+package com.example.newsshorts.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

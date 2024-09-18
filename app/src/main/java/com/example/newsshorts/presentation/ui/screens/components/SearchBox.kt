@@ -1,4 +1,4 @@
-package com.example.newsshorts.ui.screens.components
+package com.example.newsshorts.presentation.ui.screens.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.OutlinedTextField
@@ -8,7 +8,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.newsshorts.ui.viewmodel.NewsViewModel
+import com.example.newsshorts.presentation.ui.viewmodel.NewsViewModel
 
 @Composable
 fun SearchBox(

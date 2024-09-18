@@ -1,4 +1,4 @@
-package com.example.newsshorts.ui.screens.components
+package com.example.newsshorts.presentation.ui.screens.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image

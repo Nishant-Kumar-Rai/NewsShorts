@@ -1,4 +1,4 @@
-package com.example.newsshorts.di
+package com.example.newsshorts.data.di
 
 import com.example.newsshorts.data.api.NewsApi
 import com.example.newsshorts.data.datasource.NewsDataSource

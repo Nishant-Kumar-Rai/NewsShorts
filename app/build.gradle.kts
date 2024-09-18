@@ -4,17 +4,18 @@ plugins {
     alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.serialization)
     id("kotlin-parcelize")
 }
 
 android {
     namespace = "com.example.newsshorts"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.newsshorts"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -70,9 +71,14 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.kotlinx.serialization.json)
+
 
     //lifecycle-viewmodel-compose
     implementation(libs.lifecycle.viewmodel.compose)
+
+    //navigation-compose
+    implementation(libs.navigation.compose)
 
     //Hilt
     implementation(libs.hilt.android)

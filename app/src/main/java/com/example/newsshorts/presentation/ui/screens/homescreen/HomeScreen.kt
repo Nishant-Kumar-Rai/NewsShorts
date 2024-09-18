@@ -1,5 +1,6 @@
-package com.example.newsshorts.ui.screens.homescreen
+package com.example.newsshorts.presentation.ui.screens.homescreen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,23 +16,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.newsshorts.R
-import com.example.newsshorts.ui.screens.components.ErrorScreen
-import com.example.newsshorts.ui.screens.components.LoadingScreen
-import com.example.newsshorts.ui.screens.components.SearchBox
-import com.example.newsshorts.ui.screens.homescreen.components.ArticlesScreen
-import com.example.newsshorts.ui.viewmodel.NewsViewModel
+import com.example.newsshorts.presentation.ui.screens.components.ErrorScreen
+import com.example.newsshorts.presentation.ui.screens.components.LoadingScreen
+import com.example.newsshorts.presentation.ui.screens.components.SearchBox
+import com.example.newsshorts.presentation.ui.screens.homescreen.components.ArticlesScreen
+import com.example.newsshorts.presentation.ui.viewmodel.NewsViewModel
 
+private const val TAG = "HomeScreenTAG"
 @Composable
 fun HomeScreen(
-    viewModel: NewsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    isSearchBarVisible: Boolean
+    isSearchBarVisible: Boolean,
+    onNavigateToDetailsScreen: () -> Unit
 ) {
-
-    val isLoading by viewModel.isLoading.collectAsState()
-    val isError by viewModel.isError.collectAsState()
-    val articles by viewModel.articleList.collectAsState()
+    val viewModel = hiltViewModel<NewsViewModel>()
+    Log.d(TAG, "HomeScreen: $viewModel")
     val searchText by viewModel.searchText.collectAsState()
+    val homeUiState by viewModel.homeUiState.collectAsState()
+
+
 
     var isApple by rememberSaveable {
         mutableStateOf(false)
@@ -42,11 +46,12 @@ fun HomeScreen(
     }
 
 
-    if (isError.isNotEmpty())
-        ErrorScreen(errorMessage = isError, R.drawable.baseline_error_24)
+    if (homeUiState.isError.isNotEmpty()) ErrorScreen(
+        errorMessage = homeUiState.isError!!, R.drawable.baseline_error_24
+    )
 
 
-    if (isLoading)
+    if (homeUiState.isLoading)
         LoadingScreen()
 
 
@@ -75,15 +80,19 @@ fun HomeScreen(
                 onClick = {
                     isTesla = !isTesla
                     isApple = false
-                    viewModel.filterNews("tesla")
+                    viewModel.handleIntents(NewsViewModel.HomeScreenIntents.FilterNews("tesla"))
                 },
                 label = { Text(text = "Tesla") },
                 modifier = Modifier.padding(8.dp)
             )
 
         }
-        if (articles.isNotEmpty()) {
-            ArticlesScreen(articles = articles.filter { e -> e.urlToImage != null && e.urlToImage.isNotEmpty() })
+        if (homeUiState.articles.isNotEmpty()) {
+            ArticlesScreen(
+                articles = homeUiState.articles.filter { e ->
+                    !e.urlToImage.isNullOrEmpty()
+                },
+            ) { onNavigateToDetailsScreen() }
         } else {
             if (searchText.isNotEmpty())
                 ErrorScreen(
