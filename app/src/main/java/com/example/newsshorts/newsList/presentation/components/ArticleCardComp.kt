@@ -1,81 +1,41 @@
 package com.example.newsshorts.newsList.presentation.components
 
+import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.example.newsshorts.R
 import com.example.newsshorts.core.data.entity.Articles
 import com.example.newsshorts.core.presentation.common.AnnotatedText
+import com.example.newsshorts.core.util.Helper
 import kotlinx.coroutines.launch
-
-private const val TAG = "HomeScreenComponents"
-@Composable
-fun ArticlesScreen(
-    articles: List<Articles>,
-    onNavigateToDetailsScreen: () -> Unit
-) {
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 10.dp),
-            state = listState
-        ) {
-            items(items = articles, key = { item -> item.title }) { article ->
-                ArticleCard(article = article) {
-                    onNavigateToDetailsScreen()
-                }
-        }
-    }
-
-        FloatingActionButton(onClick = {
-            coroutineScope.launch {
-                listState.animateScrollToItem(index = 0)
-            }
-        }) {
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowUp,
-                contentDescription = "",
-                modifier = Modifier.align(Alignment.Center),
-            )
-        }
-    }
-
-}
 
 @Composable
 fun ArticleCard(
@@ -83,9 +43,11 @@ fun ArticleCard(
     article: Articles,
     onNavigateToDetailsScreen: () -> Unit
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     OutlinedCard(
         onClick = { onNavigateToDetailsScreen() },
-        modifier = Modifier
+        modifier = modifier
             .padding(8.dp)
             .clip(RoundedCornerShape(16.dp)),
         border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
@@ -115,7 +77,6 @@ fun ArticleCard(
             AnnotatedText(title = "Title", value = article.title)
             AnnotatedText(title = "Author", value = article.author)
             AnnotatedText(title = "Description", value = article.description)
-
             Row(
                 horizontalArrangement = Arrangement.SpaceAround, modifier = Modifier.fillMaxWidth()
             ) {
@@ -126,7 +87,26 @@ fun ArticleCard(
                     )
                 }
 
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        val imgBitmap = Helper.loadImageFromUrl(article.urlToImage!!,context)
+                        val imageFile = Helper.saveImageToCache(imgBitmap!!,context,article.title)
+
+                        val imgURI = FileProvider.getUriForFile(
+                            context, "com.example.newsshorts.provider",
+                            imageFile!!
+                        )
+                        val sendIntent = Intent(Intent.ACTION_SEND).apply {
+//                            data = imgURI
+                            type = "image/*"
+                            putExtra(Intent.EXTRA_STREAM, imgURI)
+                            putExtra(Intent.EXTRA_TEXT, article.title)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        startActivity(context, shareIntent, null)
+                    }
+                }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_share_24),
                         contentDescription = "bookmark"
@@ -136,21 +116,3 @@ fun ArticleCard(
         }
     }
 }
-
-@Composable
-fun BookmarkButton(
-    isBookmarked: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-
-    IconToggleButton(checked = isBookmarked, onCheckedChange = { onClick() }) {
-//        Icon(
-//            imageVector = if (isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
-//            contentDescription = null // handled by click label of parent
-//        )
-
-    }
-
-}
-

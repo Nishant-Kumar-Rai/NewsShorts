@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.newsshorts.newsDetails.presentation.DetailsScreen
-import com.example.newsshorts.newsList.presentation.HomeScreen
+import com.example.newsshorts.newsList.presentation.NewsListScreen
 
 @Composable
 fun NewsShortsNavHost(
@@ -22,7 +22,7 @@ fun NewsShortsNavHost(
     ) {
 
         composable<ScreenDestinations.NewsListScreen> {
-            HomeScreen(true) {}
+            NewsListScreen(modifier,true) {}
         }
 
         composable<ScreenDestinations.NewsDetailsScreen> { DetailsScreen() }

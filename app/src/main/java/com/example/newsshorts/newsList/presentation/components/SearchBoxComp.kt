@@ -16,7 +16,6 @@ fun SearchBox(
     viewModel: NewsListViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
     val searchTextValue by viewModel.searchText.collectAsState()
-    val isSearching by viewModel.isSearching.collectAsState()
 
     OutlinedTextField(
         value = searchTextValue,
@@ -24,6 +23,5 @@ fun SearchBox(
         modifier = modifier.padding(8.dp),
         label = { Text(text = "Type to search news")},
         placeholder = {Text("Search news")}
-
     )
 }
