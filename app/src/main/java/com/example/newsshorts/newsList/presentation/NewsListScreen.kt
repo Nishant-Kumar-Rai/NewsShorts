@@ -24,7 +24,8 @@ import com.example.newsshorts.newsList.presentation.components.SearchBox
 
 private const val TAG = "HomeScreenTAG"
 @Composable
-fun HomeScreen(
+fun NewsListScreen(
+    modifier: Modifier? = Modifier,
     isSearchBarVisible: Boolean,
     onNavigateToDetailsScreen: () -> Unit
 ) {
@@ -34,22 +35,17 @@ fun HomeScreen(
     var isApple by rememberSaveable {
         mutableStateOf(false)
     }
-
     var isTesla by rememberSaveable {
         mutableStateOf(true)
     }
-
-
+    // Error
     if (homeUiState.isError.isNotEmpty()) ErrorScreen(
         errorMessage = homeUiState.isError, R.drawable.baseline_error_24
     )
-
-
+    // Loading
     if (homeUiState.isLoading)
         LoadingScreen()
-
-
-
+    // Success
     Column {
         if (isSearchBarVisible) SearchBox(modifier = Modifier.fillMaxWidth())
         Row(
